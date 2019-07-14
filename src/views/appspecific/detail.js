@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useReducer, useContext, useEffect } from "react";
 
 import * as s from "../../shardslib";
 import * as c from '../../components'
@@ -8,58 +8,43 @@ import utils from '../../appstate/utils';
 import * as a from '../../components/appspecific'
 
 const Detail = (props) => {
+  const [cstate, setState] = useReducer(
+    (cstate, newState) => ({...cstate, ...newState}),{
+      loading: false, place:null, msg:null, notify:null,tbdata: [],sum:0.0}
+    )
+
   const { state, dispatch } = useContext(AppContext)
   const { data,id } = props.location
 
-  //data
-  const [tbdata,settdata] = useState([])
-  const [cdata,setcdata] = useState(null)
-  // utilities
-  const [notify, setnotify] = useState(null)
-  const [msg, setmsg] = useState(null)
-  const [place, setplace] = useState(null)
-  const [theme, settheme] = useState('')
-  const [loading, setloading] = useState(false);
 
-  // useEffect(() => {
-  //   setloading(true)
-  //   utils.utilfxns.fetchdata(id,'savings','','').then(rd => {
-  //     setloading(false)
-  //     var out = rd;
-  //     if (out.success) {
-  //       settdata(rd.sd)
-  //     } else {
-  //       setnotify(true)
-  //       setplace('tr')
-  //       setmsg(out[0].em)
-  //     }
-  //   },err => {
-  //     setnotify(true)
-  //     settheme('danger')
-  //     setmsg('Failed to Fetch Asset Data')
-  //     setloading(false)
-  //   })
-  //   return () => {
-  //     console.log('bye');
-  //   };
-  // },[])
 
+  useEffect(() => {
+    setState({loading:true, notify:null, msg:null, place:null})
+    utils.utilfxns.submitdata({val:{cidn:id},sdt:'',form:'',dbf:'sp_cproducts_find',s:'fd',a:'find'}).then(rd => {
+      setState({loading:false})
+      let out = rd;
+      if(out.success){
+        let sum=0.0
+        out.sd.map((d,k)=>{
+          sum = sum + (parseFloat(d.tot));
+        })
+        setState({sum:sum})
+      } else {
+        setState({notify:true, msg:out[0].em, place:'tr'})
+
+      }
+    })
+  },[])
   const submit = (fm) => {
-    setnotify(null);setmsg(null);setplace(null);
-    setloading(true)
+    setState({loading:true, notify:null, msg:null, place:null})
     utils.utilfxns.submitdata(fm).then(rd => {
-      setloading(false)
+      setState({loading:true})
       var out = rd;
       if(out.success){
-        settdata(rd.sd)
-        setnotify(true)
-        setplace('tr')
-        setmsg('Deposit made successfully')
-
+        setState({notify:true, msg:'Deposit made successfully', place:'tr', tbdata:rd.sd})
       } else {
-        setnotify(true)
-        setplace('tr')
-        setmsg(out[0].em)
+        setState({notify:true, msg:out[0].em, place:'tr'})
+
       }
     })
   }
@@ -74,22 +59,22 @@ const Detail = (props) => {
             <c.CustomSpan title='Next of Kin' value={data.nxk} />
             <c.CustomSpan title='Next of Kin Phoneno' value={data.nkt} />
             <c.CustomSpan title='Address' value={data.had} />
-            <c.CustomSpan title='Amount Paid' value={'GHC '+(data.avl * 1).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} />
-            <c.CustomSpan title='Arrears' value={'GHC '+(data.avl * 1).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} />
+            <c.CustomSpan title='Amount Paid' value={'GHC '+(data.tot * 1).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} />
+            <c.CustomSpan title='Products Bought' value={'GHC '+(cstate.sum * 1).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')} />
           </s.ListGroupItem>
       </s.ListGroup>
   }
 
   const mkprodtbl = () =>{
     const tbcfg = {header:['S/No','Product','Price','Qty','Date'],flds:[{n:'nam',f:'t'},{n:'prc',f:'d'},{n:'qty',f:'n'},{n:'dat',f:'t'}]}
-    const p = '{"mid":"n"}';const params = {fld:'mid',val:id}
-    return <c.MagsterDataTable load={true} ttl='Products' height='300px' phld='Items' btns={[]} data={[]} tbcfg={tbcfg} prm={params} svc='fd' a='find' p={p} dbf='cproducts'/>
+    const p = '{"mid":"n"}';const spm = {mid:id}
+    return <c.MagsterDataTable load={true} ttl='Products' height='300px' phld='Items' btns={[]} data={[]} tbcfg={tbcfg} spm={spm} svc='fd' a='find' p={p} dbf='cproducts'/>
   }
 
   const mkpmttbl = () =>{
     const tbcfg = {header:['S/No','Amount','Date'],flds:[{n:'amt',f:'d'},{n:'dcd',f:'t'}]};
-    const p = '{"mid":"n"}';const params = {fld:'mid',val:id}
-    return <c.MagsterDataTable load={true} ttl='Payments' height='300px' phld='Items' btns={[]} data={tbdata || []} tbcfg={tbcfg} prm={params} svc='fd' a='find' p={p} dbf='savings'/>
+    const p = '{"mid":"n"}';const spm = {mid:id}
+    return <c.MagsterDataTable load={true} ttl='Payments' height='300px' phld='Items' btns={[]} data={cstate.tbdata || []} tbcfg={tbcfg} spm={spm} svc='fd' a='find' p={p} dbf='savings'/>
   }
 
 
@@ -122,7 +107,7 @@ const Detail = (props) => {
         {data && mkprodtbl() }
       </s.Col>
     </s.Row>
-    { notify && msg && place && <c.Notification place={place} type='danger' msg={msg} time='3'/>}
+    { cstate.notify && cstate.msg && cstate.place && <c.Notification place={cstate.place} type='danger' msg={cstate.msg} time='3'/>}
   </s.Container>
   );
 }

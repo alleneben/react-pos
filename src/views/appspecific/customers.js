@@ -210,7 +210,8 @@ const Customers = (props) => {
   const mkpcusttbl = () =>{
     const btns = [
       {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">more_vert</i></span>{" "} Detail </s.Button>,fn:'viewfn',type:'lnk',lnk:'/customers/'},
-      {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">check</i></span>{" "} Edit </s.Button>,fn:'editfn',type:'btn'},
+      {btn:<s.Button theme="white"><span className="text-primary"><i className="material-icons">check</i></span>{" "} Edit </s.Button>,fn:'editfn',type:'btn'},
+      {btn:<s.Button theme="white"><span className="text-danger"><i className="material-icons">print</i></span>{" "} Print </s.Button>,fn:'download',type:'btn'},
     ]
     const tbcfg = {header:['S/No','Name','Code','Mob 1','Mob 2','Actions'],flds:[{n:'nam',f:'t'},{n:'mno',f:'t'},{n:'mob',f:'t'},{n:'tel',f:'t'}]}
     const p = '{"rid":"n","nam":"t","cod":"t","sdt":"t","edt":"t","sts":"n","pos":"n","plm":"n"}'

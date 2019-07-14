@@ -8,9 +8,9 @@
 				//use ADODB
 				$db = NewADOConnection('postgres');
 				$db->SetFetchMode(ADODB_FETCH_ASSOC);
-				$db->Connect('localhost','postgres','naas','pos');
+				// $db->Connect('localhost','postgres','naas','pos');
 				// $db->Connect('localhost','postgres','ampofo07','ampofodb');
-				// $db->Connect('localhost','postgres','$i$+m!n','mackerd');
+				$db->Connect('localhost','postgres','$i$+m!n','mackerd');
 
 				return $db;
 			}

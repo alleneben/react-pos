@@ -7,6 +7,7 @@
   require_once 'dompdf/lib/php-svg-lib/src/autoload.php';
   require_once 'dompdf/src/Autoloader.php';
   Dompdf\Autoloader::register();
+  // new KPSession();
   session_start();
 
 
@@ -17,7 +18,6 @@
 
 	//$POST = json_decode(file_get_contents('php://input'),true);
 
-  // error_log(print_r($_GET,true));
 
   if(isset($_POST['s']) && $_POST['m']=='l'){ //when a service is requested
 		try
@@ -29,7 +29,7 @@
             $s = $_POST['s'];
 			      $a = $_POST['a'];
 
-            //error_log(print_r($_SESSION['us']['rid'],true));
+            // error_log(print_r($_SESSION['us'],true));
 
 			$_SESSION['us']['rid']=$_POST['uid'];
 			$_SESSION['PHPSESSID'] = $_POST['ssi'];
@@ -60,7 +60,7 @@
             $s = $_POST['i'];
 			      $a = $_POST['a'];
 
-            //error_log(print_r($_SESSION['us']['rid'],true));
+            // error_log(print_r($_SESSION['us'],true));
 
 			$_SESSION['us']['rid']=$_POST['uid'];
 			$_SESSION['PHPSESSID'] = $_POST['ssi'];
@@ -91,7 +91,12 @@
 		catch(Exception $e){
 			die (ErrorHandler::Interpret($e));
 		}
-	}
+  }
+	// } else {
+  //   error_log(print_r($_SESSION,true));
+  //
+	// 	echo json_encode(array(session_name() => session_id()));
+  // }
    elseif (isset($_POST['s']) && $_POST['m']=='undefined') {
      # code...
 		$sess = new KPSessionWrite();

@@ -1,5 +1,5 @@
 <?php
-class KPSession 
+class KPSession
 {
 	function __construct()
     {
@@ -9,22 +9,23 @@ class KPSession
                                  array(&$this, 'Write'),
                                  array(&$this, 'Destroy'),
                                  array(&$this, 'GC'));
-                                   
-       register_shutdown_function('session_write_close');  
-	   session_start();
+
+       register_shutdown_function('session_write_close');
+	   	 session_start();
+			 error_log(print_r($_SESSION,true));
      }
-        
+
 	function Open($save_path, $name)
 	{
-		try 
+		try
 		{
-			$dbl=new DBLink();
+			$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
 			$sessionid = $_COOKIE[session_name()];
 			$sql="SELECT * FROM sps_session_open('$sessionid')"; //
 			$stmt=$cnn->PrepareSP($sql);
 			$cnn->Execute($stmt);
-	    	
+
 		}
 		catch(ADODB_Exception $e)
 		{
@@ -32,22 +33,22 @@ class KPSession
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
 		return true;
 	}
 
 	function Close()
 	{
-		try 
+		try
 		{
-			$dbl=new DBLink();
+			$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
-			$sql="SELECT * FROM sps_session_close()"; 
+			$sql="SELECT * FROM sps_session_close()";
 			$stmt=$cnn->PrepareSP($sql);
 			$cnn->Execute($stmt);
 	    	$cnn->Close();
-			
+
 		}
 		catch(ADODB_Exception $e)
 		{
@@ -55,17 +56,17 @@ class KPSession
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
 		return true;
-	}	    
+	}
 
 	function Read($sessionid)
 	{
-		
-		try 
+
+		try
 		{
-			$dbl=new DBLink();
+			$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
 			$sql="SELECT * FROM sps_session_read('$sessionid')";
 			$stmt=$cnn->PrepareSP($sql);
@@ -76,50 +77,50 @@ class KPSession
 			catch(ADODB_Exception $e)
 		{
 			return ErrorHandler::InterpretADODB($e);
-			
+
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
 		return $sessiondata;
 	}
 
 	function Write($sessionid, $sessiondata)
 	{
-		try 
+		try
 		{
-	  		$dbl=new DBLink();
+	  		$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
 	  		$sql="SELECT * FROM sps_session_write('$sessionid','$sessiondata')";
 	  		$stmt=$cnn->PrepareSP($sql);
 			$cnn->Execute($stmt);
-	        
+
 		}
 		catch(ADODB_Exception $e)
 		{
 			return ErrorHandler::InterpretADODB($e);
-			
-		
+
+
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
 		return true;
 	}
 
 	function Destroy()
 	{
-		try 
+		try
 		{
-			$dbl=new DBLink();
+			$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
 			$sessionid = $_COOKIE[session_name()];
 			$sql="SELECT * FROM sps_session_destroy('$sessionid')";
 			$stmt=$cnn->PrepareSP($sql);
 			$cnn->Execute($stmt);
-	    
+
 		}
 		catch(ADODB_Exception $e)
 		{
@@ -127,9 +128,9 @@ class KPSession
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
-		
+
 		//Empty Session
 		$_SESSION=array();
 		//Delete Client's Session Cookie
@@ -138,11 +139,11 @@ class KPSession
    		{
         	setcookie(session_name(), '', time()-3600, $CookieInfo['path']);
     	}
-    	elseif (empty($CookieInfo['secure'])) 
+    	elseif (empty($CookieInfo['secure']))
     	{
         	setcookie(session_name(), '', time()-3600, $CookieInfo['path'], $CookieInfo['domain']);
-		} 
-		else 
+		}
+		else
 		{
         	setcookie(session_name(), '', time()-3600, $CookieInfo['path'], $CookieInfo['domain'], $CookieInfo['secure']);
     	}
@@ -151,14 +152,14 @@ class KPSession
 
 	function GC()
 	{
-		try 
+		try
 		{
-	  		$dbl=new DBLink();
+	  		$dbl=new ConnDB();
 			$cnn=$dbl->Connection();
 			$sql="SELECT * FROM sps_session_gc()";
 			$stmt=$cnn->PrepareSP($sql);
 	    	$cnn->Execute($stmt);
-	    	
+
 		}
 	   	catch(ADODB_Exception $e)
 		{
@@ -166,7 +167,7 @@ class KPSession
 		}
 		catch(Exception $e)
 		{
-			return ErrorHandler::Interpret($e);	
+			return ErrorHandler::Interpret($e);
 		}
 		return true;
 	}

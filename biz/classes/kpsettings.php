@@ -1,30 +1,30 @@
 <?php
-	class KPSettings extends KPBase{
+	class KPSettings extends AppBase{
 		//constructor: prepare initializations here
 		public function __construct(){
-			parent::__construct(); 
+			parent::__construct();
 			$p = '{"rid":"n","hsh":"n","nam":"t","typ":"t","dsc":"t","val":"t","sts":"n","ast":"n","pos":"n","plm":"n","stp":"t"}';
 			$this->props = json_decode($p,true);
 		}
-		
+
 		public function Edit($pd){
 			try {
 	            //format
-				$fp = $this->props; 
+				$fp = $this->props;
 				//required fields
 				$rv = array('rid','val','stp');
 				//call formating function
-				$dd = $this->formatPost($fp,$pd,$rv);			
+				$dd = $this->formatPost($fp,$pd,$rv);
 				//connect to db
-				$dbl=new DBLink();
+				$dbl=new ConnDB();
 				$cnn=$dbl->Connection();
-				//create sql statement				
+				//create sql statement
 				$sql = "SELECT * FROM sps_systemdefault_edit(".
 					$dd['rid'].",".
 					$dd['val'].",".
 					$dd['stp'].",".
 					$this->userid.")";  error_log($sql);
-			
+
 				$stmt=$cnn->PrepareSP($sql);
 				$rc=$cnn->Execute($sql);
 				$sd=$rc->getarray();
@@ -44,27 +44,27 @@
 				if($cnn)  $cnn->Close();
 				return ErrorHandler::Interpret($e);
 			}
-			
+
 		}
-		
+
 		public function Search($pd){
 			try {
 	            //format
-				$fp = $this->props; 
+				$fp = $this->props;
 				//required fields
 				$rv = array();
 				//call formating function
-				$dd = $this->formatPost($fp,$pd,$rv);			
+				$dd = $this->formatPost($fp,$pd,$rv);
 				//connect to db
-				$dbl=new DBLink();
+				$dbl=new ConnDB();
 				$cnn=$dbl->Connection();
-				//create sql statement				
+				//create sql statement
 				$sql = "SELECT * FROM sps_systemdefault_find(".
 					$dd['rid'].",".
 					$dd['nam'].",".
 					$dd['pos'].",".
 					$dd['plm'].",".
-					$this->userid.")"; 
+					$this->userid.")";
 				//prepare and execute sql statement (adodb)
 				$stmt=$cnn->PrepareSP($sql);
 				$rc=$cnn->Execute($stmt);
@@ -89,7 +89,7 @@
 				return ErrorHandler::Interpret($e);
 			}
 		}
-		
+
 		public function GetHash($sd){
 			try {
 	            //associate the keys
@@ -103,7 +103,7 @@
 				return ErrorHandler::Interpret($e);
 			}
 		}
-		
+
 		public function Get($pd){
 			try {
 				$rs = $this->Search($pd);
@@ -125,6 +125,6 @@
 				return ErrorHandler::Interpret($e);
 			}
 		}
-						
+
 }
 ?>

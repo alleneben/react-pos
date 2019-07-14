@@ -159,6 +159,9 @@
 .regioncard a {
   text-decoration: none;
 }
+.clearfilters {
+  cursor: pointer;
+}
 .shards-landing-page--1 {
   padding-left: 0 !important;
   padding-right: 0 !important;

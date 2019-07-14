@@ -1,5 +1,5 @@
 
-import React, {useContext, useState,useEffect, useRef} from 'react';
+import React, {useContext, useState,useEffect, useReducer} from 'react';
 
 import api from '../../appstate/api';
 import utils from '../../appstate/utils';
@@ -12,26 +12,21 @@ import * as c from '../../components';
 
 
 function Shops(props) {
-  const [loading, setloading] = useState(false)
-  const [data, setdata] = useState([])
-  const [pos, setpos] = useState(0);
-  const [plm, setplm] = useState(10);
-
-
-
+  const [cstate, setState] = useReducer(
+    (cstate, newState) => ({...cstate, ...newState}),{
+      loading: false, data: [], pos: 0, plm: 10}
+    )
   const { state, dispatch } = useContext(AppContext)
 
 
   useEffect(() => {
-    setloading(true)
-    utils.utilfxns.fetchdata('','shops',pos,plm).then(rd => {
+    setState({loading: true})
+    utils.utilfxns.fetchdata('','shops',cstate.pos,cstate.plm).then(rd => {
       var out = rd;
       if(out.success){
-        setdata(rd.sd)
-        setloading(false)
+        setState({loading:false, data: rd.sd})
       } else {
-        // setmsg(out.em)
-        setloading(false)
+        setState({loading: false})
       }
     },err => {
       console.log(err);
@@ -49,8 +44,8 @@ function Shops(props) {
 
   const makecontent = () => {
     var link = '/shops/';
-    if(loading ) return <>fetching data.... <c.Notification theme='danger' msg='Slow Connection' time='7'/></>
-    var shops = data.map((shop,key) => {
+    if(cstate.loading ) return <>fetching data.... <c.Notification theme='danger' msg='Slow Connection' time='7'/></>
+    var shops = cstate.data.map((shop,key) => {
 
       return <s.Col md='3' className='animated rollIn regioncard' key={key}><c.ShopCard name={shop.nam} rct={shop.rct} link={link+shop.rid+'/products'}/></s.Col>
     })
@@ -78,7 +73,7 @@ function Shops(props) {
       <s.Row>
       <div className="menu-container">{ makesubmenus() }</div>
         <s.Col lg="12" md="12">
-          { loading ? <><s.Spinner size={50} spinnerColor={"#333"} spinnerWidth={2} visible={loading} /></> : makecontent()  }
+          { cstate.loading ? <><s.Spinner size={50} spinnerColor={"#333"} spinnerWidth={2} visible={cstate.loading} /></> : makecontent()  }
           { /*maketabletest()*/}
         </s.Col>
       </s.Row>

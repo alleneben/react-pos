@@ -12,7 +12,7 @@
 			if(empty($_SESSION['us']['rid'])){
 				$_SESSION['us']['rid']=true;
 				$this->userid=$_SESSION['us']['rid'];
-				//error_log("all ".print_r($this->userid,true));
+				// error_log("all ".print_r($_SESSION['us'],true));
 			}
 
 			$this->userid=$_SESSION['us']['rid'];

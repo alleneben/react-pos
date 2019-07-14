@@ -228,7 +228,6 @@ const Product = (props) => {
     const btns = [
       {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">more_vert</i></span>{" "} View </s.Button>,fn:'viewfn',type:'btn'},
       {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">check</i></span>{" "} Edit </s.Button>,fn:'editfn',type:'btn'},
-      {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">print</i></span>{" "} Print </s.Button>,fn:'printfn',type:'btn'},
     ]
     const tbcfg = {header:['S/No','Item','Retail Price 1','Retail Price 2','Whole Sale Price','Qty','Qty/group','Bulk','Actions'],flds:[{n:'nam',f:'t'},{n:'prc',f:'d'},{n:'rsb',f:'d'},{n:'wrsb',f:'d'},{n:'qty',f:'n'},{n:'qpb',f:'n'},{n:'blk',f:'n'}]}
     const p = '{"rid":"n","nam":"t","sno":"t","sdt":"t","edt":"t","shi":"n","sts":"n","pos":"n","plm":"n"}'
@@ -240,10 +239,10 @@ const Product = (props) => {
       {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">more_vert</i></span>{" "} View </s.Button>,fn:'viewfn',type:'btn'},
       {btn:<s.Button theme="white"><span className="text-success"><i className="material-icons">print</i></span>{" "} Print </s.Button>,fn:'printfn',type:'btn'},
     ]
-    const tbcfg = {header:['S/No','Item','Retil Price 1','Retail Price 2','Whole Sale Price','Qty','Qty/group','Bulk','Actions'],flds:[{n:'nam',f:'t'},{n:'prc',f:'d'},{n:'rsb',f:'d'},{n:'wrsb',f:'d'},{n:'qty',f:'n'},{n:'qpb',f:'n'},{n:'blk',f:'n'}]}
-    const p = '{"rid":"n","nam":"t","sno":"t","sdt":"t","edt":"t","shi":"n","sts":"n","pos":"n","plm":"n"}'
+    const tbcfg = {header:['S/No','Item','Price','Qty','Profit','SalesCode','Date','CustomerID'],flds:[{n:'nam',f:'t'},{n:'prc',f:'d'},{n:'qty',f:'n'},{n:'pft',f:'d'},{n:'scd',f:'t'},{n:'dat',f:'t'},{n:'tel',f:'t'}]}
+    const p = '{"rid":"n","nam":"t","sno":"t","sdt":"t","edt":"t","sts":"n","pos":"n","plm":"n"}'
     const params = {fld:'shi',val:props.match.params.id}
-    return <c.MagsterDataTable isShow={true} height='300px' phld='Sales' btns={btns} data={[]} tbcfg={tbcfg} prm={params} svc='fd' a='find' p={p} dbf='products'/>
+    return <c.MagsterDataTable load={true} reload={false} isShow={true} height='300px' phld='Sales' btns={[]} data={[]} tbcfg={tbcfg} prm={params} svc='fd' a='find' p={p} dbf='sales'/>
   }
 
   const makesubmenus = () => {

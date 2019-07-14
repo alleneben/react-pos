@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 
 
 import * as s from "../../shardslib";
 import * as c from "../";
+import RangeDatePicker from "./rangedatepicker";
 import styles from '../../pagination.css';
-import api from '../../appstate/api'
+import api from '../../appstate/api';
+import utils from '../../appstate/utils'
 
 
 
 let newdata=[]
-function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,dbf,prm,plm,printfn,addfn}) {
+function MagsterDataTable ({load,reload,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,dbf,spm,plm,printfn,addfn}) {
+  const [cstate, setState] = useReducer(
+    (cstate, newState) => ({...cstate, ...newState}),
+    { search: {}, }
+    )
   const [loading, setloading] = useState(false);
-  const [search, setsearch] = useState('');
+
   const [tdata, settdata] = useState([])
   const [filtereditems, setfiltereditems] = useState([]);
   const [datalen, setdatalen] = useState(0)
@@ -25,27 +31,34 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
   const [msg, setmsg] = useState('');
   const [plc, setplc] = useState('')
 
-
   useEffect(() => {
-    if(load) request(svc,a,'','',1,false,false,prm);
+    if(load) request(svc,a,'','',1,true,false,spm);
 
     return () => {
-      console.log('bye');
+      console.log('cleaning up ...');
     };
-  },[])
+  },[reload])
 
   newdata = data.length < 1 ? tdata : data;
 
   const request = async (s,a,o,l,sign,chg,dsbl,param) => {
-    setloading(true);setntf(false);setmsg(null);setplc(null)
-    var fm = new FormData();
-    console.log(param);
+    setloading(true);setntf(false);setmsg(null);setplc(null);
+    var fm = new FormData(),pps={};
     if(param){
-      fm.append(param.fld,param.val)
+      for (var key in param) {
+        if(key === 'sdt' || key === 'edt'){
+          var dt = param[key].toISOString();
+          fm.append(key,dt);
+        }else {
+          fm.append(key,param[key]);
+        }
+        pps[key]= key.substr(key.length-1);
+      }
     }
 
-    fm.append('s', svc);fm.append('nam',search);fm.append('a', a);fm.append('df','sp_'+dbf+'_find');
+    fm.append('s', svc);fm.append('a', a);fm.append('df','sp_'+dbf+'_find');
     fm.append("ssi", 'nggcf66ocm6om1hek81kejkluc');fm.append("uid", "3");
+    fm.append("ssi", utils.utilfxns.getcookie('_metalcraft'));fm.append("uid", utils.utilfxns.getuid());
     fm.append('m','l');fm.append('dd',p);fm.append('plm',l);fm.append('pos',o);
 
     var response = await fetch(api.fxns.endpoint,{method: 'post', body: fm})
@@ -71,10 +84,24 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
     setplc(plc)
   }
   const onChange = (e) => {
-    setsearch(e.target.value);
+    // setsearch({...search,[e.target.name]:e.target.value});
+    setState({search: {...cstate.search, [e.target.name]:e.target.value}})
+
     settdata(filtereditems.filter(item => new RegExp(e.target.value, "i").exec(item.nam)))
   }
 
+  const onStartChange = (value) =>{
+    // setsearch({...search,['sdt']: value})
+    setState({search: {...cstate.search, ['sdt']: value}})
+  }
+  const onEndChange = (value) =>{
+    // setsearch({...search,['edt']: value})
+    setState({search: {...cstate.search, ['edt']: value}})
+  }
+  const clearfilters = () => {
+    // setsearch({})
+    setState({search: {}})
+  }
   const rightpagination = () => {
     return cnt === parseInt(cnts) ? false : request(svc,a,cnt,pglm,1,false,true,5)
   }
@@ -85,6 +112,18 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
   const onchangepager = (e) => {
     setpglm(e.target.value)
     request(svc,a,0,e.target.value,1,true,true,5)
+  }
+
+  const download = (item,p,svc,a,dbf,fmt) => {
+    let sp = typeof item === 'object' ? {rid:item.rid} : cstate.search;
+    utils.utilfxns.download(sp,p,svc,a,dbf,fmt)
+    .then(rd => {
+      rd[0].then(file => {
+        if(file.size > 100){
+          utils.utilfxns.apipdf(file,rd[1],'pdf');
+        }
+      })
+    })
   }
 
 
@@ -99,11 +138,8 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
       case 'editfn':
         // editform(item,'editfn','animated slideInDown')
         break;
-      case 'printfn':
-        printfn(item,'pdf')
-        break;
-      case 'transferfn':
-        // transferfn(item)
+      case 'download':
+        download(item,p,'rp','members','members','pdf')
         break;
       default:
         console.log('fxn not found');
@@ -114,28 +150,36 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
     <c.CustomCard animated='animated fadeIn' title={ttl} children={
       <s.Row noGutters className="border-bottom py-2 bg-light">
         <div className="table-responsive">
-        {isShow && <s.InputGroup seamless className="mb-3">
-          <s.FormInput placeholder={'Search '+phld} value={search} onChange={onChange}/>
+        {isShow &&<> <s.InputGroup seamless className="mb-3">
+          <s.FormInput placeholder={'Search '+phld} name="nam" value={cstate.search.nam || ''} onChange={onChange}/>
+          <s.FormInput placeholder={'Search by Code'} name="sno" value={cstate.search.sno || ''} onChange={onChange}/>
           <s.InputGroupAddon type="append">
           <s.InputGroupText>
             <i className="material-icons">search</i>
           </s.InputGroupText>
           <s.Button
-            disabled={!search}
+            disabled={!cstate.search}
             theme="primary"
             type="button"
-            onClick={() => request(svc,a,cnt,pglm,1,false,false,5)}
+            onClick={() => request(svc,a,'','',1,true,false,cstate.search)}
           >
             Search
           </s.Button>
-        { /* <s.Button
-            theme="white"
-            onClick={() => request(svc,a,cnt,'',1,false,false,5)}
-          >
-            <span className="text-success"><i className="material-icons">refresh</i></span>{" "} Load All
-          </s.Button>*/}
           </s.InputGroupAddon>
-        </s.InputGroup>}
+        </s.InputGroup>
+        <s.InputGroup seamless className="mb-3">
+          <RangeDatePicker onStartChange={onStartChange} onEndChange={onEndChange} clearfilters={clearfilters}/>
+          <s.InputGroupAddon type="append">
+            <s.InputGroupText onClick={() => download('',p,svc,a,dbf,'fmt')} className="clearfilters">
+              <i className="material-icons">print</i>
+              <img src={require("../../assets/img/icons8-export-pdf-16.png")} style={{height:'20px',width:'20px'}} className="mr-2" alt="Shards - Agency Landing Page" />
+            </s.InputGroupText>
+            <s.InputGroupText onClick={() => download('',p,svc,a,dbf,'xls')} className="clearfilters">
+              <i className="material-icons">print</i>
+              <img src={require("../../assets/img/icons8-xls-48.png")} style={{height:'20px',width:'20px'}} className="mr-2" alt="Shards - Agency Landing Page" />
+            </s.InputGroupText>
+          </s.InputGroupAddon>
+        </s.InputGroup></>}
         <div className="tbl" style={{ height: height}}>
           <table className="table mb-0 tbody table-striped table-hover table-sm">
             <thead className="thead-light">
@@ -178,25 +222,6 @@ function MagsterDataTable ({load,ttl,isShow,height,phld,btns,data,svc,a,tbcfg,p,
                                 }
                               })
                             }
-
-                              {/*<s.Button theme="white" onClick={() => viewfn(item)}>
-                                <span className="text-success">
-                                  <i className="material-icons">check</i>
-                                </span>{" "}
-                                View
-                              </s.Button>
-                              <s.Button theme="white" onClick={() => editfn(item)}>
-                                <span className="text-danger">
-                                  <i className="material-icons">more_vert</i>
-                                </span>{" "}
-                                Incidents
-                              </s.Button>*/}
-                              {/*<s.Button theme="white" onClick={() => editfn(item)}>
-                                <span className="text-primary">
-                                  <i className="material-icons">more_vert</i>
-                                </span>{" "}
-                                Edit
-                              </s.Button>*/}
                             </s.ButtonGroup>
                           </div>
                       </td>

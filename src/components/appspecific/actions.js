@@ -4,21 +4,22 @@ import PropTypes from "prop-types";
 import * as s from '../../shardslib'
 
 const Actions = ({ title, clsnm, placeholder, submit,data,cid }) => {
-    const [val, setval] = useState({});
+    const [val, setval] = useState({cidn:cid});
 
     const onchange = (e) => {
-      setval(e.target.value)
+      setval({...val,[e.target.name]:e.target.value})
     }
 
     const handlesubmit = (dbf,s,a) => {
-      if(val === '') return;
-      submit({val:val,sdt:'',form:'',dbf:dbf,s:s,a:a,cid:cid});
+      if(val.amtn == undefined) return 'Field is empty';
+      submit({val:val,sdt:'',form:'',dbf:dbf,s:s,a:a});
+      setval({})
     }
     const makeitems = () => {
       return  <>
           <s.ListGroupItem className="d-flex px-3 border-0">
               <s.InputGroup seamless className="mb-3">
-                {<s.FormInput placeholder={placeholder} name="val" type="number" value={val} onChange={onchange}/>}
+                {<s.FormInput placeholder={placeholder} name="amtn" type="number" value={val.amtn || ''} onChange={onchange}/>}
             </s.InputGroup>
           </s.ListGroupItem>
           <s.ListGroupItem className="d-flex px-3 border-0">

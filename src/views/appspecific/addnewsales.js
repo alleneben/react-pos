@@ -28,7 +28,7 @@ const AddNewSales = () => {
   const [pos, setpos] = useState(0);
   const [plm, setplm] = useState(10);
   const [cnt, setcnt] = useState(10);
-  const [table, settable] = useState(false)
+  const [reload, setreload] = useState(false)
 
 
   // menu
@@ -48,35 +48,6 @@ const AddNewSales = () => {
 
   useEffect(() => {
 
-    // setloading(true)
-    // var rdd=[]
-    // utils.utilfxns.fetchdata('','products','','').then(rd => {
-    //   var out = rd;
-    //   if(out.success){
-    //
-    //     settbdata(rd.sd)
-    //     cnts = rd.rc.rid;
-    //     setcnt(rd.sd.length)
-    //     setloading(false)
-    //     setcontentmenu('products')
-    //
-    //     // dispatch({type:'LOAD_TABLE', loading:false, payload:rd.sd, contentmenu: 'products'})
-    //   } else {
-    //     setloading(false)
-    //     setnotify(true)
-    //     settheme('success')
-    //     setmsg(out[0].em)
-    //     setplace('tr')
-    //   }
-    //
-    // },err => {
-    //   setnotify(true)
-    //   settheme('danger')
-    //   setmsg('Failed to Fetch Asset Data')
-    //   setplace('tr')
-    //   setloading(false)
-    // })
-
     return () => {
       console.log('bye');
       deckitemkeys = []
@@ -91,12 +62,6 @@ const AddNewSales = () => {
     //debugger
     setsearch(e.target.value);
   }
-
-  // const onChangeQty = (e) => {
-  //   //debugger
-  //   selecteditem['nqy'] = e.target.value;
-  //
-  // }
 
   const groupBy = (xs, key) => {
     if(xs === undefined) return ;
@@ -165,7 +130,7 @@ const AddNewSales = () => {
   }
 
   const submit = (items) => {
-    setopen(false);
+    setopen(false);setreload(false)
     if(items.length < 1) return ;
 
     setnotify(null)
@@ -178,6 +143,7 @@ const AddNewSales = () => {
         if(file.size > 100){
           setloading(false)
           // settbdata(out.sd)
+          setreload(true)
           setnotify(true)
           settheme('success')
           setmsg('Transaction was successfully')
@@ -240,7 +206,7 @@ const AddNewSales = () => {
     ]
     const tbcfg = {header:['S/No','Item','Price','Qty', 'TQty','Actions'],flds:[{n:'nam',f:'t'},{n:'prc',f:'d'},{n:'qty',f:'n'},{n:'blk',f:'n'}]}
     const p = '{"rid":"n","nam":"t","sno":"t","sdt":"t","edt":"t","shi":"n","sts":"n","pos":"n","plm":"n"}'
-    return <c.MagsterDataTable load={true} isShow={true} height='800px' phld='Items' btns={btns} data={[]} tbcfg={tbcfg} svc='fd' a='find' p={p} dbf='products' addfn={addfn}/>
+    return <c.MagsterDataTable load={true} reload={reload} isShow={true} height='800px' phld='Items' btns={btns} data={[]} tbcfg={tbcfg} svc='fd' a='find' p={p} dbf='products' addfn={addfn}/>
   }
   return (
     <s.Container fluid className="main-content-container px-4 pb-4 pt-4">

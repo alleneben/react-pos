@@ -2,8 +2,8 @@
 export default {
   fxns: {
     // endpoint:'http://172.104.244.238/biz/bis/',
-    // endpoint:'http://172.105.69.234/biz/bis/',
-    endpoint:'http://pos.loc/biz/bis/',
+    endpoint:'http://172.105.69.234/biz/bis/',
+    // endpoint:'http://pos.loc/biz/bis/',
     //endpoint:'http://metalcraftapp.com/biz/bis/',
     //imageurl:'http://metalcraftapp.com/biz/files/photos/',
     login: (params,url) => fetch(url,{method: 'post', body: params}).then(res => res.json()),

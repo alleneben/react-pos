@@ -59,7 +59,7 @@ class Rp extends AppBase{
 		<table>
 		<table >
 		<tr>
-		<td style="text-align:right;font-size:25px;">Created on $now by $uda[nam] as $uda[rnm]</td>
+		<td style="text-align:right;font-size:25px;">Created on $now by  as </td>
 		</tr>
 		</table>
 EOD;
@@ -69,7 +69,7 @@ EOD;
 	private function GetXSummary($gd,$ard=false,$extrasumm=false){
 		//may come from outside
 		$uda = $_SESSION['us'];
-		$amt = number_format($ard['tt'],2,'.',',');
+		// $amt = number_format($ard['tt'],2,'.',',');
 		$sdt = substr($gd['sdt'],0,10);
 		$edt = substr($gd['edt'],0,10);
 
@@ -83,7 +83,7 @@ EOD;
 		//$dpn=$gd['dpn']?"$gd[dpn],":"";
 		$styl="";
 		$top="
-		$uda[enm] <br/>$ard[gnm] <br/><br/> TOTAL GHC $amt<br/><br/> From:$sdt  To:$edt
+		$uda[enm] <br/>$ard[gnm] <br/><br/> TOTAL GHC <br/><br/> From:$sdt  To:$edt
 		";
 		$summ = <<<EOD
 		<table cellspacing="0" cellpadding="1" border="0">
@@ -115,7 +115,7 @@ EOD;
 		//$dpn=$gd['dpn']?"$gd[dpn],":"";
 		$styl="";
 		$top="
-		$uda[enm] <br/>$ard[gnm] <br/><br/> TOTAL GHC $amt<br/><br/> From:$sdt  To:$edt
+		$uda[enm] <br/>$ard[gnm] <br/><br/> TOTAL GHC $amt<br/><br/> From:$sdt  To:
 		";
 		$summ = <<<EOD
 		<table cellspacing="0" cellpadding="1" border="0">
@@ -130,23 +130,20 @@ EOD;
 
 	private function GetXSalesSummary($gd,$ard=false,$extrasumm=false){
 		//may come from outside
-		$uda = $_SESSION['us'];
-		$amt = number_format($ard['rc']['tot'],2,'.',',');
+    $uda = $_SESSION['us'];
 		$sdt = substr($gd['sdt'],0,10);
 		$edt = substr($gd['edt'],0,10);
 
 		if($edt==''){
 			$edt=date("Y-m-d");
 		}
+    if ($sdt == '') {
+      $sdt = 'Day 1';
+    }
 		$extra = $extrasumm?"<tr><td colspan=2>$extrasumm</td></tr>":"";
-		//$y=($gd['pyr']=='1'?'First year,':($gd['pyr']=='2'?'Second year,':($gd['pyr']=='3'?'Third year,':($gd['pyr']=='4'?'Fourth year,':''))));
-		//$s=($gd['sem']=='1'?'First semester':($gd['sem']=='2'?'Second semester':($gd['sem']=='3'?'Supplementary semester':'')));
-		//$course=$gd['pcn']?"<tr><td>Course: <strong>$gd[pcn]</strong></td></tr>":"";
-		//$dpn=$gd['dpn']?"$gd[dpn],":"";
-
 		$styl="";
 		$top="
-		$uda[enm] <br/>$ard[gnm] <br/><br/> TOTAL GHC $amt <br/><br/> From:$sdt  To:$edt
+		$uda[enm] <br/>$ard[gnm]  <br/><br/> From:$sdt &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To:$edt
 		";
 		$summ = <<<EOD
 		<table cellspacing="0" cellpadding="1" border="0">
@@ -159,175 +156,6 @@ EOD;
 		return $summ;
 	}
 
-    // public function __call($f, $p){
-    //
-    //     //$p = '{"rid":"n","nam":"t","pcd":"t","sdt":"t","exd":"t","sts":"n","pos":"n","plm":"n"}';
-    //     $this->props = $p[0][1]; //json_decode($params[0][1],true);
-    //     //error_log(print_r($p[0][0],true));
-    //
-    //     try {
-    //
-    //         $dbl=new DBLink();
-		// 	      $cnn=$dbl->Connection();
-    //
-    //         $s = $p[0][0]['fdr'];
-    //         $m = $p[0][0]['m'];
-    //
-    //         //error_log(print_r($p,true));
-    //         $s = new $s();
-		//     $d = $s->$m($p);
-    //         $ard= json_decode($d,true);
-    //         //error_log(print_r($ard,true));
-    //         if(isset($ard['failure']))
-		// 		return $this->PrintError($ard['et'],$ard['em']);
-		// 		elseif(isset($ard['success'])&&!is_array($ard['sd'])){
-		// 			return $this->PrintError('Error','PDF not found');
-		// 		}
-		// 		elseif(!(isset($ard['success'])&&is_array($ard['sd']))){
-		// 			return $this->PrintError('Error','Error Retrieving list');
-		// 		}
-		// 		//$arc = $ard['rc'];
-		// 		$vcd = $ard['sd'];
-		// 		$type = "pdf";
-		// 		//$art = $ard['tt'];
-    //             $gnm = 'oooo'; // = $gd['nam'];
-		// 		$enm = 'oooo'; //$usd['ENM'];
-		// 		$stmp = date('Ymdhi');
-		// 		$basefn = str_replace(' ','_',"Report").'_'.str_replace(' ','_',strtolower($gnm)).'_'.$stmp;
-		// 		$basefnn="Report_".strtolower($gnm);
-		// 		//=================CSV Printing Starts here===================
-		// 		if($type == 'csv'){
-		// 			$hdr = array('pid'=>'ProgramID',
-		// 					'pnm'=>'Programme Name',
-		// 					'pyr'=>'Programme Year',
-		// 					'fee'=> 'Fees',
-		// 					'cur'=> 'Currency',
-		// 					'ssi'=> 'SeesionID',
-		// 					'ssn'=> 'Session',
-		// 					'acy'=> 'Academic Year'
-		// 			);
-		// 			$dmode = true; //($form=='sum') || false;
-		// 			$csvhdr = $hdr;
-		// 			$ocsv = new CSVPrinter();
-		// 			return $ocsv->buildCSV($vcd,$csvhdr,$basefnn,$dmode);
-		// 		}
-		// 		//=================PDF Printing Starts here===================
-		// 		$pdffn = "$basefn.pdf";
-    //
-		// 		$cl = new Rcl();
-		// 		list($meta,$ad,$ls) = $cl->GetCols($m);
-		// 		//$ad = json_decode($col,true);
-		// 		$ard['gnm'] = $ad['gnm'];
-		// 		// error_log(print_r($ard['gnm'],true));
-    //
-    //
-		// 		$pdff = 9;
-		// 		//$ard['tot']=$ard['tt'];
-    //             $gd = $p[0][0];
-    //             //error_log(print_r($gd,true));
-		// 		$hdtxt = $this->GetXTopHeader($gd,$ard['gnm']);
-		// 		//$gd['ryr']=$gd['acy'];
-    //
-		// 		$summ = $this->GetXSalesSummary($gd,$ard);
-    //
-		// 		//Initialize and setup PDF
-		// 		$pdf = $this->PDFGridXSetup($ls,'A4',$meta,$summ,$hdtxt,PDF_HEADER_LOGO,TRUE);
-		// 		//error_log(print_r($vcd,true));
-		// 		// set font
-		// 		$pdf->SetFont("dejavusans", "", 12);
-		// 		//Column titles
-		// 		// ---------------------------------------------------------
-		// 		$pdf->SetTextColor(0);
-		// 		$pdf->SetDrawColor(0,0,0);
-		// 		$pdf->SetFont('','B',14);
-		// 		//Header
-		// 		$fill=0;
-		// 		$pdf->writeHTML($summ,true,true);
-		// 		$pdf->Ln();
-		// 		$pdf->SetLineWidth(.1);
-		// 		$pdf->SetFont('','B',$pdff);
-    //
-		// 		$len = 0;
-		// 		for($i=0;$i<count($meta);$i++){
-		// 			$pdf->Cell($meta[$i]['w'],5,$meta[$i]['t'],'TLRB',0,'C',$fill);
-		// 			$len+=$meta[$i]['w'];
-		// 		}
-		// 		$pdf->Ln();
-		// 		$pdf->TbLen = $len;
-		// 		$pdf->TbMeta = $meta;
-		// 		//Color and font restoration
-		// 		$pdf->SetFillColor(246,246,246);
-		// 		$pdf->SetTextColor(0);
-		// 		$pdf->SetFont('','',$pdff);
-    //
-		// 		$idx=0;$c=0;$d=0;
-    //
-		// 		foreach($vcd as $row) {
-		// 			$idx++;
-		// 			$fill=!$fill;
-		// 			$row['rid'] = $idx;
-    //
-		// 			for($i=0;$i<count($meta);$i++){
-		// 				$val = $meta[$i]['f']=='M'?number_format($row[$meta[$i]['c']],2,'.',','):$row[$meta[$i]['c']];
-		// 				$pdf->xMultiCell($meta[$i]['w'],10,$val,$meta[$i]['l'],$meta[$i]['a'],$fill,0);
-    //
-		// 			}
-		// 			$pdf->Ln();
-    //
-		// 		}
-		// 		$pdf->Ln();
-		// 		$pdf->autoHeader = false;
-		// 		// set font
-		// 		$pdf->SetFont("dejavusans", "", 12);
-		// 		//Column titles
-		// 		// ---------------------------------------------------------
-		// 		//$pdf->SetFillColor(255,0,0);
-		// 		$pdf->SetTextColor(0);
-		// 		$pdf->SetDrawColor(0,0,0);
-		// 		//Header
-		// 		$fill=1;
-    //
-		// 		$pdf->Ln();
-		// 		$pdf->autoHeader = false;
-		// 		$pdf->SetFont("dejavusans", "", 10);
-		// 		$pdf->SetTextColor(0);
-		// 		$pdf->SetDrawColor(0,0,0);
-    //
-		// 		$signing="<table border='0' cellpadding='0' cellspacing='0' align='left'>
-		// 		<tr nobr='true'>
-		// 		<td align='right'>Signature:
-		// 		</td>
-		// 		<td align='right'>.............................................<br/>
-		// 		Officer<br/><br/>
-		// 		</td>
-		// 		</tr>
-		// 		<tr nobr='true'>
-		// 		<td align='right'>Date:
-		// 		</td>
-		// 		<td align='right'>.............................................<br/>
-    //
-		// 		</td>
-		// 		</tr>
-		// 		</table>";
-		// 		//Header
-		// 		$fill=1;
-		// 		$pdf->writeHTML($signing,true,true);
-		// 		$pdf->Ln();
-    //
-		// 		//Close and output PDF document
-		// 		$pdf->Output($pdffn, "D");
-		// 		return true;
-    //
-    //     }
-    //     catch(ADODB_Exception $e){
-    //         if($cnn)  $cnn->Close();
-    //         return ErrorHandler::InterpretADODB($e);
-    //     }
-    //     catch(Exception $e){
-    //         if($cnn)  $cnn->Close();
-    //         return ErrorHandler::Interpret($e);
-    //     }
-    // }
 
 	private function PDFGridXSetup($po,$pf,$meta,$summ,$hdtxt,$hdlogo="",$shp=true,$xsumm="",$tbhh=10){
 		$pdf = new PDFPrinter($po, PDF_UNIT, $pf, true);
@@ -598,7 +426,6 @@ EOD;
 	}
   public function Receipt($pd)
     {
-      error_log(print_r($pd,true));
         try {
             $type='lh';
             if ($type == 'alh') {
@@ -821,6 +648,492 @@ EOD;
         } catch (Exception $e) {
             return ErrorHandler::Interpret($e);
         }
+    }
+
+    public function Sales($gd){
+  		try {
+        // error_log(print_r($gd,true));
+  			//Get List of registered Student for a course
+  			$aco=new FD();
+  			$ars=$aco->FetchReportData($gd);
+  			$ard= json_decode($ars,true);
+        // error_log(print_r($ard,true));
+  			if(isset($ard['failure']))
+  				return $this->PrintError($ard['et'],$ard['em']);
+  			elseif(isset($ard['success'])&&!is_array($ard['sd'])){
+  				return $this->PrintError('Error','Student not found in the registered list');
+  			}
+  			elseif(!(isset($ard['success'])&&is_array($ard['sd']))){
+  				return $this->PrintError('Error','Error Retrieving registration list');
+  			}
+  			$arc = $ard['rc'];
+  			$vcd = $ard['sd'];
+  			$type = $gd['fmt'];
+
+  			//=================Create Filename here===================
+  			$gnm = 'h';//'Course Marksheet'; // = $gd['nam'];
+        $ard['gnm'] = 'MACKERD ENT.';
+  			$enm = 'Group'; //$usd['ENM'];
+  			$stmp = date('Ymdhi');
+  			$basefn = str_replace(' ','_','rep').'_'.str_replace(' ','_',$enm).'_'.$stmp;
+  			//=================CSV Printing Starts here===================
+  			if($type == 'csv'){
+  				$hdr = array('rid'=>'Record',
+  						'nam'=>'Name of Member',
+  						'mno'=>'Member No.',
+  						'cmn'=>'Biometric No.',
+  						'tel'=>'Mobile No.',
+  						'gpn'=>'Group'
+  				);
+  				$dmode = true; //($form=='sum') || false;
+  				$csvhdr = $hdr;
+  				$ocsv = new CSVPrinter();
+  				return $ocsv->buildCSV($vcd,$csvhdr,$basefn,$dmode);
+  			}
+  			//=================PDF Printing Starts here===================
+  			$pdffn = "$basefn.pdf";
+
+  			$meta = array(
+  					array("p"=>0,"c"=>"rid","t"=>"No","w"=>15,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"N"),
+  					array("p"=>1,"c"=>"nam","t"=>"Items","w"=>50,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+  					array("p"=>2,"c"=>"qty","t"=>"Quantity","w"=>20,"h"=>0,"l"=>"TLB","a"=>"C","f"=>"T"),
+  					array("p"=>3,"c"=>"amt","t"=>"Price/Unit, GHC","w"=>30,"h"=>0,"l"=>"TLB","a"=>"R","f"=>"M"),
+            array("p"=>3,"c"=>"tot","t"=>"Total, GHC","w"=>20,"h"=>0,"l"=>"TLB","a"=>"R","f"=>"M"),
+            array("p"=>3,"c"=>"pft","t"=>"Profit, GHC","w"=>20,"h"=>0,"l"=>"TLB","a"=>"R","f"=>"M"),
+  					array("p"=>4,"c"=>"dat","t"=>"Dat","w"=>35,"h"=>0,"l"=>"TLB","a"=>"C","f"=>"T"),
+            array("p"=>3,"c"=>"scd","t"=>"Code","w"=>40,"h"=>0,"l"=>"TLB","a"=>"C","f"=>"T"),
+  					array("p"=>5,"c"=>"tel","t"=>"CustomerID","w"=>38,"h"=>0,"l"=>"TLBR","a"=>"C","f"=>"T")
+  			);
+
+        $pdff = 9;
+  			$hdtxt = $this->GetXTopHeader($gd,$gnm);
+  			$summ = $this->GetXSalesSummary($gd,$ard);
+  			$pdf = $this->PDFGridXSetup('L','A4',$meta,$summ,$hdtxt,PDF_HEADER_SYS,true);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$pdf->SetFont('dejavusans','B',14);
+  			//Header
+  			$fill=0;
+  			$pdf->writeHTML($summ,true,true);
+  			$pdf->Ln();
+  			$pdf->SetLineWidth(.1);
+  			$pdf->SetFont('','B',$pdff);
+  			$pdf->SetFillColor(192, 192, 192);
+  			//$len = 0;
+  			for($i=0;$i<count($meta);$i++){
+  				$pdf->xMultiCell($meta[$i]['w'],10,$meta[$i]['t'],'TLRB','L','C',$fill);
+  				//$len+=$meta[$i]['w']
+  			}
+  			$pdf->Ln();
+  			//Color and font restoration
+  			$pdf->SetFillColor(246,246,246);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetFont('','',$pdff);
+
+  			$idx=0;$c=0;$d=0;$tot=0.0;$pft=0.0;
+
+  			foreach($vcd as $row) {
+  				$idx++;
+  				$fill=!$fill;
+  // 				$row['rmk'] = '';
+  				$row['rid'] = $idx;
+          $tot = $tot + $row['pft'];
+          $pft = $pft + $row['tot'];
+  				// if($row['bal'] < 0 ) $pdf->SetTextColor(255,0,0);
+  				// elseif ($row['bal'] > 0 ) $pdf->SetTextColor(0,0,255);
+  				// else $pdf->SetTextColor(0,0,0);
+  				for($i=0;$i<count($meta);$i++){
+  					$val = $row[$meta[$i]['c']];
+  					// $val = $meta[$i]['f']=='M'?substr($val,0,4):$val;
+            $val = $meta[$i]['f']=='M' ? number_format($row[$meta[$i]['c']],2,'.',',') : $row[$meta[$i]['c']];
+  					$pdf->xMultiCell($meta[$i]['w'],10,$val,$meta[$i]['l'],$meta[$i]['a'],$fill,0);
+  				}
+  				$pdf->Ln();
+  			}
+  			$pdf->Ln();
+  			$pdf->autoHeader = false;
+  			$pdf->SetFont("dejavusans", "", 12);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$uda = $_SESSION['us'];
+        $tot = number_format($tot,2,'.',',');
+        $pft = number_format($pft,2,'.',',');
+  			$signing="<table border='0' cellpadding='0' cellspacing='0' align='left'>
+  			<tr nobr='true'>
+  			<td align='right'>Total Sales: GHC $tot<br/><br/>
+  			</td>
+        <td align='right'>Total Profit: GHC $pft<br/><br/>
+  			</td>
+        <td align='right'>Signature:..........................<br/>
+  			Officer, $gnm
+  			</td>
+  			</tr>
+  			</table>";
+  			//Header
+  			$fill=1;
+  			$pdf->writeHTML($signing,true,true);
+  			$pdf->Ln();
+
+  			//Close and output PDF document
+  			$pdf->Output($pdffn, "D");
+  			return true;
+  		}
+  		catch(Exception $e){
+  			return ErrorHandler::Interpret($e);
+  		}
+  	}
+
+    public function Products($gd){
+  		try {
+        // error_log(print_r($gd,true));
+  			//Get List of registered Student for a course
+  			$aco=new FD();
+  			$ars=$aco->FetchReportData($gd);
+  			$ard= json_decode($ars,true);
+        // error_log(print_r($ard,true));
+  			if(isset($ard['failure']))
+  				return $this->PrintError($ard['et'],$ard['em']);
+  			elseif(isset($ard['success'])&&!is_array($ard['sd'])){
+  				return $this->PrintError('Error','Student not found in the registered list');
+  			}
+  			elseif(!(isset($ard['success'])&&is_array($ard['sd']))){
+  				return $this->PrintError('Error','Error Retrieving registration list');
+  			}
+  			$arc = $ard['rc'];
+  			$vcd = $ard['sd'];
+  			$type = $gd['fmt'];
+
+  			//=================Create Filename here===================
+  			$gnm = 'h';//'Course Marksheet'; // = $gd['nam'];
+  			$enm = 'Group'; //$usd['ENM'];
+  			$stmp = date('Ymdhi');
+  			$basefn = str_replace(' ','_','rep').'_'.str_replace(' ','_',$enm).'_'.$stmp;
+  			//=================CSV Printing Starts here===================
+  			if($type == 'csv'){
+  				$hdr = array('rid'=>'Record',
+  						'nam'=>'Name of Member',
+  						'mno'=>'Member No.',
+  						'cmn'=>'Biometric No.',
+  						'tel'=>'Mobile No.',
+  						'gpn'=>'Group'
+  				);
+  				$dmode = true; //($form=='sum') || false;
+  				$csvhdr = $hdr;
+  				$ocsv = new CSVPrinter();
+  				return $ocsv->buildCSV($vcd,$csvhdr,$basefn,$dmode);
+  			}
+  			//=================PDF Printing Starts here===================
+  			$pdffn = "$basefn.pdf";
+
+  			$meta = array(
+  					array("p"=>0,"c"=>"rid","t"=>"No","w"=>15,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"N"),
+  					array("p"=>1,"c"=>"nam","t"=>"Items","w"=>50,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+  					array("p"=>2,"c"=>"qty","t"=>"Quantity","w"=>30,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+  					array("p"=>3,"c"=>"prc","t"=>"Price/Unit GHC","w"=>40,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"M"),
+  					array("p"=>5,"c"=>"ctn","t"=>"Category","w"=>38,"h"=>0,"l"=>"TLBR","a"=>"L","f"=>"T")
+  			);
+
+        $pdff = 9;
+  			$hdtxt = $this->GetXTopHeader($gd,$gnm);
+  			$summ = $this->GetXSalesSummary($gd,$ard);
+  			$pdf = $this->PDFGridXSetup('P','A4',$meta,$summ,$hdtxt,PDF_HEADER_SYS,true);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$pdf->SetFont('dejavusans','B',14);
+  			//Header
+  			$fill=0;
+  			$pdf->writeHTML($summ,true,true);
+  			$pdf->Ln();
+  			$pdf->SetLineWidth(.1);
+  			$pdf->SetFont('','B',$pdff);
+  			$pdf->SetFillColor(192, 192, 192);
+  			//$len = 0;
+  			for($i=0;$i<count($meta);$i++){
+  				$pdf->xMultiCell($meta[$i]['w'],10,$meta[$i]['t'],'TLRB','L','C',$fill);
+  				//$len+=$meta[$i]['w']
+  			}
+  			$pdf->Ln();
+  			//Color and font restoration
+  			$pdf->SetFillColor(246,246,246);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetFont('','',$pdff);
+
+  			$idx=0;$c=0;$d=0;
+
+  			foreach($vcd as $row) {
+  				$idx++;
+  				$fill=!$fill;
+  // 				$row['rmk'] = '';
+  				$row['rid'] = $idx;
+  				if($row['bal'] < 0 ) $pdf->SetTextColor(255,0,0);
+  				elseif ($row['bal'] > 0 ) $pdf->SetTextColor(0,0,255);
+  				else $pdf->SetTextColor(0,0,0);
+          for($i=0;$i<count($meta);$i++){
+  					$val = $row[$meta[$i]['c']];
+  					// $val = $meta[$i]['f']=='M'?substr($val,0,4):$val;
+            $val = $meta[$i]['f']=='M' ? number_format($row[$meta[$i]['c']],2,'.',',') : $row[$meta[$i]['c']];
+  					$pdf->xMultiCell($meta[$i]['w'],10,$val,$meta[$i]['l'],$meta[$i]['a'],$fill,0);
+  				}
+  				$pdf->Ln();
+  			}
+  			$pdf->Ln();
+  			$pdf->autoHeader = false;
+  			$pdf->SetFont("dejavusans", "", 12);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$uda = $_SESSION['us'];
+
+        $signing="<table border='0' cellpadding='0' cellspacing='0' align='left'>
+  			<tr nobr='true'>
+  			<td align='right'>
+  			</td>
+        <td align='right'>
+  			</td>
+        <td align='right'>Signature:..........................<br/>
+  			Officer, $gnm
+  			</td>
+  			</tr>
+  			</table>";
+  			//Header
+  			$fill=1;
+  			$pdf->writeHTML($signing,true,true);
+  			$pdf->Ln();
+
+  			//Close and output PDF document
+  			$pdf->Output($pdffn, "D");
+  			return true;
+  		}
+  		catch(Exception $e){
+  			return ErrorHandler::Interpret($e);
+  		}
+  	}
+
+    public function Member($gd){
+  		try {
+        // error_log(print_r($gd,true));
+  			//Get List of registered Student for a course
+  			$aco=new FD();
+  			$ars=$aco->FetchReportData($gd);
+  			$ard= json_decode($ars,true);
+        // error_log(print_r($ard,true));
+  			if(isset($ard['failure']))
+  				return $this->PrintError($ard['et'],$ard['em']);
+  			elseif(isset($ard['success'])&&!is_array($ard['sd'])){
+  				return $this->PrintError('Error','Student not found in the registered list');
+  			}
+  			elseif(!(isset($ard['success'])&&is_array($ard['sd']))){
+  				return $this->PrintError('Error','Error Retrieving registration list');
+  			}
+  			$arc = $ard['rc'];
+  			$vcd = $ard['sd'];
+  			$type = $gd['fmt'];
+
+  			//=================Create Filename here===================
+  			$gnm = 'h';//'Course Marksheet'; // = $gd['nam'];
+  			$enm = 'Group'; //$usd['ENM'];
+  			$stmp = date('Ymdhi');
+  			$basefn = str_replace(' ','_','rep').'_'.str_replace(' ','_',$enm).'_'.$stmp;
+  			//=================CSV Printing Starts here===================
+  			if($type == 'csv'){
+  				$hdr = array('rid'=>'Record',
+  						'nam'=>'Name of Member',
+  						'mno'=>'Member No.',
+  						'cmn'=>'Biometric No.',
+  						'tel'=>'Mobile No.',
+  						'gpn'=>'Group'
+  				);
+  				$dmode = true; //($form=='sum') || false;
+  				$csvhdr = $hdr;
+  				$ocsv = new CSVPrinter();
+  				return $ocsv->buildCSV($vcd,$csvhdr,$basefn,$dmode);
+  			}
+  			//=================PDF Printing Starts here===================
+  			$pdffn = "$basefn.pdf";
+
+  			$meta = array(
+  					array("p"=>0,"c"=>"rid","t"=>"No","w"=>10,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"N"),
+  					array("p"=>1,"c"=>"nam","t"=>"Customer","w"=>50,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+            array("p"=>2,"c"=>"mno","t"=>"Code","w"=>25,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+            array("p"=>2,"c"=>"tel","t"=>"Mobile 1","w"=>30,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+  					array("p"=>2,"c"=>"mob","t"=>"Mobile 2","w"=>30,"h"=>0,"l"=>"TLB","a"=>"L","f"=>"T"),
+  					array("p"=>5,"c"=>"tot","t"=>"Amt Saved (GHC)","w"=>38,"h"=>0,"l"=>"TLBR","a"=>"R","f"=>"M")
+  			);
+
+        $pdff = 9;
+  			$hdtxt = $this->GetXTopHeader($gd,$gnm);
+  			$summ = $this->GetXSalesSummary($gd,$ard);
+  			$pdf = $this->PDFGridXSetup('P','A4',$meta,$summ,$hdtxt,PDF_HEADER_SYS,true);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$pdf->SetFont('dejavusans','B',14);
+  			//Header
+  			$fill=0;
+  			$pdf->writeHTML($summ,true,true);
+  			$pdf->Ln();
+  			$pdf->SetLineWidth(.1);
+  			$pdf->SetFont('','B',$pdff);
+  			$pdf->SetFillColor(192, 192, 192);
+  			//$len = 0;
+  			for($i=0;$i<count($meta);$i++){
+  				$pdf->xMultiCell($meta[$i]['w'],10,$meta[$i]['t'],'TLRB','L','C',$fill);
+  				//$len+=$meta[$i]['w']
+  			}
+  			$pdf->Ln();
+  			//Color and font restoration
+  			$pdf->SetFillColor(246,246,246);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetFont('','',$pdff);
+
+  			$idx=0;$c=0;$d=0;
+
+  			foreach($vcd as $row) {
+  				$idx++;
+  				$fill=!$fill;
+  // 				$row['rmk'] = '';
+  				$row['rid'] = $idx;
+  				if($row['bal'] < 0 ) $pdf->SetTextColor(255,0,0);
+  				elseif ($row['bal'] > 0 ) $pdf->SetTextColor(0,0,255);
+  				else $pdf->SetTextColor(0,0,0);
+          for($i=0;$i<count($meta);$i++){
+  					$val = $row[$meta[$i]['c']];
+  					// $val = $meta[$i]['f']=='M'?substr($val,0,4):$val;
+            $val = $meta[$i]['f']=='M' ? number_format($row[$meta[$i]['c']],2,'.',',') : $row[$meta[$i]['c']];
+  					$pdf->xMultiCell($meta[$i]['w'],10,$val,$meta[$i]['l'],$meta[$i]['a'],$fill,0);
+  				}
+  				$pdf->Ln();
+  			}
+  			$pdf->Ln();
+  			$pdf->autoHeader = false;
+  			$pdf->SetFont("dejavusans", "", 12);
+  			$pdf->SetTextColor(0);
+  			$pdf->SetDrawColor(0,0,0);
+  			$uda = $_SESSION['us'];
+
+        $signing="<table border='0' cellpadding='0' cellspacing='0' align='left'>
+  			<tr nobr='true'>
+  			<td align='right'>
+  			</td>
+        <td align='right'>
+  			</td>
+        <td align='right'>Signature:..........................<br/>
+  			Officer, $gnm
+  			</td>
+  			</tr>
+  			</table>";
+  			//Header
+  			$fill=1;
+  			$pdf->writeHTML($signing,true,true);
+  			$pdf->Ln();
+
+  			//Close and output PDF document
+  			$pdf->Output($pdffn, "D");
+  			return true;
+  		}
+  		catch(Exception $e){
+  			return ErrorHandler::Interpret($e);
+  		}
+  	}
+
+    public function Members($pd){
+      try {
+        // error_log(print_r($pd,true));
+        $type = $pd['fmt'];
+  			$aco=new FD();
+        $ard= json_decode($aco->FindMember($pd),true);
+  			if($ard['sts']>0)
+  				return $this->PrintError($ard['et'],$ard['em']);
+
+        $prd= json_decode($aco->FetchPaymentData($pd),true);
+  			if($prd['sts']>0)
+  				return $this->PrintError($prd['et'],$prd['em']);
+
+        $pro= json_decode($aco->FetchProductData($pd),true);
+  			if($pro['sts']>0)
+  				return $this->PrintError($pro['et'],$pro['em']);
+
+  			$vcd = $ard['sd'];
+  			$pcd = $prd['sd'];
+  			$nxd = $pro['sd'];
+
+  			$fn = 'Customer_Statement';//$ard['fln'];
+  			$pdffn = "$fn.pdf";
+
+
+  			$stq=new KPSettings();
+  			$srs=$stq->Search(array('hsh'=>1));
+  			$srd= json_decode($srs,true);
+  			if(!(isset($srd['success'])&&is_array($srd['sd']))){
+  				//error_log('Error in KPSettings->Search'.$srs);
+  				return $this->PrintError('Error','Error Retrieving System Settings. Check the logs.');
+  			}
+  			$rc = $srd['rc'];
+  			$hd = $srd['hd'];
+  			$sch['ndt'] = $hd['CURRENT_YEAR'];
+  			$sch['ttl'] = $hd['ADMLET_TITLE'];
+  			$sch['add'] = $hd['ADMLET_ADDRESS'];
+  			$sch['loc'] = $hd['ADM_LOCATION'];
+  			$bse=$sch['ndt'];
+  			$upp = $sch['ndt']+1;
+
+
+  			//report name
+  			$gnm = "Result ";
+  			// ---------------------------------------------------------
+  			$hdtxt =$sch['ttl']; //"SALVATION INTERNATIONAL ACADEMY";
+  			$divider = "<p>---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- </p>";
+
+  			//Initialize and setup PDF
+  			$pdf = $this->PDFLetterSetup('P','A4',false,false,$hdtxt,9,1);
+
+  			$kxt = new KPXTemplate();
+
+  			$idx=0;$c=0;$d=0;
+  			foreach($vcd as $row) {
+          // error_log(print_r($vcd,true));
+  				$idx++;
+  				$fill=!$fill;
+  				$html = $kxt->reportform($vpg,$row,$pcd,$nxd,$arc);
+  				$head = $kxt->reportheader($vpg,$row,$pcd,$nxd);
+
+  				$pdf->SetFont('helvetica', 'B', 10);
+
+  				// if($idx>0) $pdf->AddPage();
+  				$pdf->Write(1, 'CUSTOMER STATEMENT', '', 0, 'C', true, 0, false, false, 0);
+  				$pdf->SetFont('times', '', 11);
+  				$pdf->writeHTML($head, true, true);
+  				$pdf->writeHTML($html, true, false, false, false, '');
+  				$pdf->SetLineWidth(.1);
+
+  				//$pdf->writeHTML($divider, true, false, false, false, '');
+  				//$pdf->writeHTML($head, true, true);
+  				//$pdf->writeHTML($html, true, false, false, false, '');
+          $signing="<table border='0' cellpadding='0' cellspacing='0' align='left'>
+    			<tr nobr='true'>
+    			<td align='right'>
+    			</td>
+          <td align='right'>
+    			</td>
+          <td align='right'>Signature:..........................<br/><br/>
+    			Officer, Kofi
+    			</td>
+    			</tr>
+    			</table>";
+  				// $foot = $kxt->reportfooter($row,$xgd);
+  				$pdf->SetFont('helvetica', '', 9);
+  				$pdf->writeHTML($signing, true, false, false, false, '');
+
+  				//Barcoding here
+  				$pdf->SetFont('helvetica', '', 10);
+  				$pdf->setBarcode($row['mno']);
+  				$pdf->PrintBarcode($row['mno']);
+  			}
+  			//Close and output PDF document
+  			$pdf->Output($pdffn, "D");
+  			return true;
+      }
+  		catch(Exception $e){
+  			return ErrorHandler::Interpret($e);
+  		}
     }
 }
 ?>

@@ -9,23 +9,30 @@ import {
 
 import "../../assets/css/range-date-picker.css";
 
-const RangeDatePicker = (props) => {
+const RangeDatePicker = ({className,onStartChange, onEndChange, clearfilters}) => {
 
   const [startDate, setStartDate] = useState(undefined);
   const [endDate, setEndDate] = useState(undefined);
 
 
   const handleStartDateChange = (value) => {
+    onStartChange(new Date(value))
     setStartDate(new Date(value))
   }
 
   const handleEndDateChange = (value) => {
+    onEndChange(new Date(value))
     setEndDate(new Date(value))
   }
 
-  const { className } = props;
+
   const classes = classNames(className, "d-flex", "my-auto", "date-range");
 
+  const clear = () => {
+    setStartDate(undefined)
+    setEndDate(undefined)
+    clearfilters()
+  }
   return (
     <InputGroup className={classes}>
       <DatePicker
@@ -45,8 +52,9 @@ const RangeDatePicker = (props) => {
         className="text-center"
       />
       <InputGroupAddon type="append">
-        <InputGroupText>
+        <InputGroupText onClick={clear} className="clearfilters">
           <i className="material-icons">&#xE916;</i>
+          Clear
         </InputGroupText>
       </InputGroupAddon>
     </InputGroup>

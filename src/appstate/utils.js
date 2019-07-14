@@ -13,6 +13,7 @@ export default {
     test: (searchterm,svc,pos,plm) => test(searchterm,svc,pos,plm),
     submitdata: (fm) => submitdata(fm),
     sales: (fm) => sales(fm),
+    download: (param,fp,s,a,dbf,fmt) => download(param,fp,s,a,dbf,fmt),
     getuid: () => getuid(),
     validate: (fm) => validate(fm),
     applicationstart:(dispatch) => applicationstart(dispatch),
@@ -75,16 +76,17 @@ function getPDF(params,filename,fmt) {
 }
 
 const apipdf = (params,filename,fmt) =>{
-  var newBlob = new Blob([params], {type: "application/pdf"});
+  let newBlob = new Blob([params], {type: "application/pdf"});
   if (window.navigator && window.navigator.msSaveOrOpenBlob) {
     window.navigator.msSaveOrOpenBlob(newBlob);
     return;
   }
 
   const data = window.URL.createObjectURL(newBlob);
-  var link = document.createElement('a');
+  let link = document.createElement('a');
   link.href = data;
-  link.download=filename.split(';')[1].split('=')[1].replace(/"/g,'');
+  let fnm = filename ? filename.split(';')[1].split('=')[1].replace(/"/g,'') : 'file.pdf'
+  link.download=fnm;
   window.open(link)
   // link.click();
   //document.body.removeChild(link);
@@ -250,7 +252,7 @@ function ag(data){
 
 
 const submitdata = (dd) => {
-  const {val,sdt,form,dbf,s,a, cid} = dd;
+  const {val,sdt,form,dbf,s,a} = dd;
   var fm = new FormData(),props={};
   // for (var key in val) {
   //   if(key === 'sdtt'){
@@ -272,8 +274,10 @@ const submitdata = (dd) => {
       props[form[i]['props']['name']]= form[i]['props']['name'].substr(form[i]['props']['name'].length-1);
     }
   } else {
-      fm.append('amt',val);fm.append('cid',cid);
-      props['cid']='n';props['amt']= 'n';
+      for(var k in val){
+        fm.append(k,val[k]);
+        props[k]=k.substr(k.length-1);
+      }
   }
 
   fm.append('ssi',getcookie('_metalcraft'));fm.append("uid", getuid());
@@ -285,13 +289,32 @@ const submitdata = (dd) => {
 
 const sales = (dd) => {
   const {items,f,s,a,fp,val} = dd;
-
   var fm = new FormData();
 
   fm.append('ssi',getcookie('_metalcraft'));fm.append("uid", getuid());
   fm.append("s", s);fm.append("a", a);fm.append('df',f);fm.append('fp',fp)
   fm.append('m','l');fm.append('itm',JSON.stringify(items));fm.append('val',JSON.stringify(val));
 
+  return api.fxns.getfile(fm,api.fxns.endpoint);
+}
+
+const download = (param,fp,s,a,dbf,fmt) => {
+  var fm = new FormData();
+  if(param){
+    for (var key in param) {
+      if(key === 'sdt' || key === 'edt'){
+        var dt = param[key].toISOString();
+        fm.append(key,dt);
+      }else {
+        fm.append(key,param[key]);
+      }
+    }
+  }
+
+  fm.append('ssi',getcookie('_metalcraft'));fm.append("uid", getuid());
+  fm.append("s", 'rp');fm.append("a", dbf);fm.append('df','sp_'+dbf+'_find');fm.append('dd',fp)
+  fm.append('m','l');fm.append('fmt',fmt)
+  //
   return api.fxns.getfile(fm,api.fxns.endpoint);
 }
 
